@@ -10,7 +10,7 @@
 fn main() {
     let mut x = 100;
     let y = &mut x;
-    *y += 100;
+    *y += 100; //两个可变引用的生命周期没有重叠，所以是可以的
     let z = &mut x;
     *z += 1000;
     assert_eq!(x, 1200);
