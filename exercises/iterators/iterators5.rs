@@ -11,7 +11,11 @@
 // Execute `rustlings hint iterators5` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
+
+/*总结：Vec,HashMap,&[T](slice)都存在迭代器,iter()获得ITEM=&T的迭代器,iter_mut()获得ITEM=&mut T的迭代器，iter_into()会获得所有权转移的迭代器
+在迭代器里面实现了迭代器的类型会有两种方法，一种是适配者迭代器的方法，会使迭代器从一种迭代器变成另外一种迭代器，但是ITEM内部的类型不变，如.map(||)闭包里面不再叠加引用，
+.filter(||)在闭包里面叠加引用，还有一种为消费者迭代器方法，只有使用了消费者迭代器方法，前面的方法才会生效，对迭代器产生影响，.count()统计个数,.sum（）全部加起来 */
+
 
 use std::collections::HashMap;
 
@@ -33,9 +37,7 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 }
 
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
-    // map is a hashmap with String keys and Progress values.
-    // map = { "variables1": Complete, "from_str": None, ... }
-    todo!();
+    map.iter().filter(|(_,iter_value)| (**iter_value) == value).count()
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -54,7 +56,9 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     // collection is a slice of hashmaps.
     // collection = [{ "variables1": Complete, "from_str": None, ... },
     //     { "variables2": Complete, ... }, ... ]
-    todo!();
+    collection.iter().map(|hash_map| {
+        hash_map.iter().filter(|(key, value1)| (**value1) == value).count()
+    }).sum()
 }
 
 #[cfg(test)]
