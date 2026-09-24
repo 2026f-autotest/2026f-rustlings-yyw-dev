@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,6 +39,21 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let mut num: Vec<u8> = vec![];
+        let arr = [tuple.0, tuple.1, tuple.2];
+        for i in arr {
+            if let Ok(x) = u8::try_from(i) {
+                num.push(x);
+            } else {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        Ok(Color {
+            red: num[0],
+            green: num[1],
+            blue: num[2],
+        })
     }
 }
 
@@ -48,6 +61,20 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let mut num: Vec<u8> = vec![];
+        for i in arr {
+            if let Ok(x) = u8::try_from(i) {
+                num.push(x);
+            } else {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        Ok(Color {
+            red: num[0],
+            green: num[1],
+            blue: num[2],
+        })
     }
 }
 
@@ -55,6 +82,23 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        let mut num: Vec<u8> = vec![];
+        for &i in slice {
+             if let Ok(x) = u8::try_from(i) {
+                num.push(x);
+            } else {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+
+        Ok(Color{
+            red: num[0],
+            green: num[1],
+            blue: num[2],
+        })
     }
 }
 
