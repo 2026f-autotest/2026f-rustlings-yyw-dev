@@ -2,14 +2,13 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
 
 pub struct Heap<T>
 where
-    T: Default,
+    T: Default + Ord,
 {
     count: usize,
     items: Vec<T>,
@@ -18,7 +17,7 @@ where
 
 impl<T> Heap<T>
 where
-    T: Default,
+    T: Default + Ord,
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
@@ -37,7 +36,9 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.sift_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +58,45 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        if right <= self.count {
+            if (self.comparator)(&self.items[left], &self.items[right]) {
+                return left;
+            } else {
+                return right;
+            }
+        } else if left <= self.count {
+            return left;
+        } else {
+            panic!("no child!");
+        }
+    }
+
+    fn sift_up(&mut self, idx: usize) {
+        let mut current_idx = idx;
+        while current_idx > 1 {
+            let parent_index = self.parent_idx(current_idx);
+            if (self.comparator)(&self.items[current_idx], &self.items[parent_index]) {
+                self.items.swap(current_idx, parent_index);
+                current_idx = parent_index;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn sift_down(&mut self, idx: usize) {
+        let mut current_index = idx;
+        while self.children_present(current_index) {
+            let sml_child_idx = self.smallest_child_idx(current_index);
+            if (self.comparator)(&self.items[sml_child_idx], &self.items[current_index]) {
+                self.items.swap(current_index, sml_child_idx);
+                current_index = sml_child_idx;
+            } else {
+                break;
+            }
+        }
     }
 }
 
@@ -79,13 +117,23 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Ord + Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.count > 0 {
+            self.items.swap(1, self.count);
+            self.count -= 1;
+            let item = self.items.pop();
+            if self.count > 0 {
+                self.sift_down(1);
+            }
+            item
+        } else {
+            None
+        }
+		
     }
 }
 
